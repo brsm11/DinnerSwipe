@@ -61,22 +61,38 @@
   </div>
 
   <script>
-    const meals = [
-      {
-        name: "Chicken Caprese Pasta - Bravo Italian Kitchen",
-        image: "https://source.unsplash.com/600x400/?italian-food",
-        query: "Italian"
-      },
-      {
-        name: "Chilean Sea Bass - Jag's Steak & Seafood",
-        image: "https://source.unsplash.com/600x400/?steak-seafood",
-        query: "Seafood"
-      },
-      {
-        name: "Hummus & Tabouli Plate - Aladdin's Eatery",
-        image: "https://source.unsplash.com/600x400/?mediterranean-food",
-        query: "Mediterranean"
+    let userLocation = null;
+
+    // Preload location on page load
+    window.onload = function () {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            userLocation = {
+              lat: position.coords.latitude.toFixed(4),
+              lng: position.coords.longitude.toFixed(4)
+            };
+          },
+          (error) => {
+            alert("Unable to retrieve your location: " + error.message);
+          }
+        );
+      } else {
+        alert("Geolocation is not supported by your browser.");
       }
+    };
+
+    const meals = [
+      { name: "Chicken Caprese Pasta - Bravo Italian Kitchen", image: "https://source.unsplash.com/600x400/?italian-food", query: "Italian" },
+      { name: "Chilean Sea Bass - Jag's Steak & Seafood", image: "https://source.unsplash.com/600x400/?steak-seafood", query: "Seafood" },
+      { name: "Hummus & Tabouli Plate - Aladdin's Eatery", image: "https://source.unsplash.com/600x400/?mediterranean-food", query: "Mediterranean" },
+      { name: "Sushi Combo", image: "https://source.unsplash.com/600x400/?sushi", query: "Sushi" },
+      { name: "Tacos al Pastor", image: "https://source.unsplash.com/600x400/?tacos", query: "Tacos" },
+      { name: "Pad Thai", image: "https://source.unsplash.com/600x400/?pad-thai", query: "Thai" },
+      { name: "Cheeseburger Deluxe", image: "https://source.unsplash.com/600x400/?burger", query: "Burger" },
+      { name: "BBQ Ribs", image: "https://source.unsplash.com/600x400/?bbq", query: "BBQ" },
+      { name: "Butter Chicken", image: "https://source.unsplash.com/600x400/?indian-food", query: "Indian" },
+      { name: "Falafel Bowl", image: "https://source.unsplash.com/600x400/?falafel", query: "Falafel" }
     ];
 
     let index = 0;
@@ -92,24 +108,13 @@
     }
 
     function orderMeal() {
-      if (!navigator.geolocation) {
-        alert("Geolocation is not supported by your browser.");
+      if (!userLocation) {
+        alert("Location not loaded yet. Please wait a moment and try again.");
         return;
       }
-
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const lat = position.coords.latitude.toFixed(4);
-          const lng = position.coords.longitude.toFixed(4);
-          const query = encodeURIComponent(meals[index].query);
-
-          const url = `https://www.doordash.com/search/store/${query}/?lat=${lat}&lng=${lng}`;
-          window.open(url, "_blank");
-        },
-        (error) => {
-          alert("Unable to retrieve your location: " + error.message);
-        }
-      );
+      const query = encodeURIComponent(meals[index].query);
+      const url = `https://www.doordash.com/search/store/${query}/?lat=${userLocation.lat}&lng=${userLocation.lng}`;
+      window.open(url, "_blank");
     }
 
     // Initial load
