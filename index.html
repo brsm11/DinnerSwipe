@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DinnerSwipe Web MVP</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      background-color: #f4f4f4;
+    }
+    .card {
+      width: 90%;
+      max-width: 400px;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+    .card img {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1em;
+      cursor: pointer;
+    }
+    .left {
+      background-color: #ddd;
+    }
+    .right {
+      background-color: #28a745;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <img id="meal-image" src="" alt="Meal" />
+    <h2 id="meal-name"></h2>
+    <div class="buttons">
+      <button class="btn left" onclick="nextMeal()">Swipe Left</button>
+      <button class="btn right" onclick="orderMeal()">Swipe Right (Order)</button>
+    </div>
+  </div>
+
+  <script>
+    const meals = [
+      {
+        name: "Chicken Caprese Pasta - Bravo Italian Kitchen",
+        image: "https://source.unsplash.com/600x400/?italian-food",
+        query: "Italian"
+      },
+      {
+        name: "Chilean Sea Bass - Jag's Steak & Seafood",
+        image: "https://source.unsplash.com/600x400/?steak-seafood",
+        query: "Seafood"
+      },
+      {
+        name: "Hummus & Tabouli Plate - Aladdin's Eatery",
+        image: "https://source.unsplash.com/600x400/?mediterranean-food",
+        query: "Mediterranean"
+      }
+    ];
+
+    let index = 0;
+
+    function showMeal() {
+      document.getElementById("meal-name").textContent = meals[index].name;
+      document.getElementById("meal-image").src = meals[index].image;
+    }
+
+    function nextMeal() {
+      index = (index + 1) % meals.length;
+      showMeal();
+    }
+
+    function orderMeal() {
+      if (!navigator.geolocation) {
+        alert("Geolocation is not supported by your browser.");
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude.toFixed(4);
+          const lng = position.coords.longitude.toFixed(4);
+          const query = encodeURIComponent(meals[index].query);
+
+          const url = `https://www.doordash.com/search/store/${query}/?lat=${lat}&lng=${lng}`;
+          window.open(url, "_blank");
+        },
+        (error) => {
+          alert("Unable to retrieve your location: " + error.message);
+        }
+      );
+    }
+
+    // Initial load
+    showMeal();
+  </script>
+</body>
+</html>
